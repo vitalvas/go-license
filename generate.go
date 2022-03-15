@@ -1,28 +1,24 @@
 package license
 
 import (
-	"crypto"
-	"crypto/rand"
-	"crypto/rsa"
-	"crypto/sha256"
+	"crypto/ed25519"
+	"crypto/sha1"
 	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
 	"errors"
 	"time"
-
-	_ "crypto/sha256"
 )
 
 type Generate struct {
 	lic License
-	key *rsa.PrivateKey
+	key ed25519.PrivateKey
 }
 
 type LicenseContent struct {
-	Data     string `json:"data"`
-	Sign     string `json:"sign"`
-	DataHash string `json:"dh"`
+	Data     string `json:"d"`
+	Sign     string `json:"s"`
+	DataHash string `json:"h"`
 }
 
 func NewGenerate() *Generate {
@@ -33,7 +29,7 @@ func NewGenerate() *Generate {
 	}
 }
 
-func (g *Generate) LoadPrivateKey(key *rsa.PrivateKey) {
+func (g *Generate) LoadPrivateKey(key ed25519.PrivateKey) {
 	g.key = key
 }
 
@@ -89,16 +85,13 @@ func (g *Generate) GetLicenseKey() ([]byte, error) {
 		return nil, err
 	}
 
-	msgHash := sha256.New()
+	msgHash := sha1.New()
 	if _, err = msgHash.Write(data); err != nil {
 		return nil, err
 	}
 	msgHashSum := msgHash.Sum(nil)
 
-	signature, err := rsa.SignPSS(rand.Reader, g.key, crypto.SHA256, msgHashSum, nil)
-	if err != nil {
-		return nil, err
-	}
+	signature := ed25519.Sign(g.key, data)
 
 	encryptedData, err := encryptData(data, signature, msgHashSum)
 	if err != nil {

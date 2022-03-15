@@ -1,20 +1,22 @@
 package main
 
 import (
+	"crypto/ed25519"
 	"crypto/rand"
-	"crypto/rsa"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/vitalvas/go-license"
 )
 
-var privateKey *rsa.PrivateKey
+var privateKey ed25519.PrivateKey
+var publicKey ed25519.PublicKey
 var err error
 
 func init() {
-	privateKey, err = rsa.GenerateKey(rand.Reader, 2048)
+	publicKey, privateKey, err = ed25519.GenerateKey(rand.Reader)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -47,19 +49,19 @@ func generate() []byte {
 		log.Fatal(err)
 	}
 
-	fmt.Println(string(key))
+	fmt.Println(strings.TrimSpace(string(key)))
 
 	return key
 }
 
 func verify(key []byte) {
 	load := license.Load(key)
-	load.LoadPublicKey(privateKey.PublicKey)
+	load.LoadPublicKey(publicKey)
 
 	lic, err := load.GetLicense()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(lic)
+	fmt.Printf("%#v\n", lic)
 }

@@ -2,9 +2,8 @@ package license
 
 import (
 	"bytes"
-	"crypto"
-	"crypto/rsa"
-	"crypto/sha256"
+	"crypto/ed25519"
+	"crypto/sha1"
 	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
@@ -13,7 +12,7 @@ import (
 
 type Loader struct {
 	licKey []byte
-	rsaKey rsa.PublicKey
+	pubKey ed25519.PublicKey
 }
 
 func Load(key []byte) *Loader {
@@ -22,8 +21,8 @@ func Load(key []byte) *Loader {
 	}
 }
 
-func (l *Loader) LoadPublicKey(key rsa.PublicKey) {
-	l.rsaKey = key
+func (l *Loader) LoadPublicKey(key ed25519.PublicKey) {
+	l.pubKey = key
 }
 
 func (l *Loader) GetLicense() (*License, error) {
@@ -62,7 +61,7 @@ func (l *Loader) GetLicense() (*License, error) {
 		return nil, err
 	}
 
-	msgHash := sha256.New()
+	msgHash := sha1.New()
 	if _, err = msgHash.Write(decryptedData); err != nil {
 		return nil, err
 	}
@@ -72,8 +71,8 @@ func (l *Loader) GetLicense() (*License, error) {
 		return nil, errors.New("wrong verify checksum")
 	}
 
-	if err := rsa.VerifyPSS(&l.rsaKey, crypto.SHA256, msgHashSum, signature, nil); err != nil {
-		return nil, err
+	if verified := ed25519.Verify(l.pubKey, decryptedData, signature); !verified {
+		return nil, errors.New("error verify signature")
 	}
 
 	var license License
