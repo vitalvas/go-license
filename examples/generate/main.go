@@ -10,12 +10,21 @@ import (
 	"github.com/vitalvas/go-license"
 )
 
-func main() {
-	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+var privateKey *rsa.PrivateKey
+var err error
+
+func init() {
+	privateKey, err = rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		log.Fatal(err)
 	}
+}
 
+func main() {
+	verify(generate())
+}
+
+func generate() []byte {
 	lic := license.NewGenerate()
 	lic.LoadPrivateKey(privateKey)
 
@@ -39,4 +48,18 @@ func main() {
 	}
 
 	fmt.Println(string(key))
+
+	return key
+}
+
+func verify(key []byte) {
+	load := license.Load(key)
+	load.LoadPublicKey(privateKey.PublicKey)
+
+	lic, err := load.GetLicense()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(lic)
 }
