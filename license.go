@@ -3,12 +3,12 @@ package license
 import "time"
 
 type License struct {
-	ID           string            `json:"id"`
-	Licensed     map[string]string `json:"licensed"`
-	IssuedAt     uint32            `json:"issued_at"`
-	ExpiredAt    uint32            `json:"expired_at"`
-	Features     []string          `json:"features"`
-	Restrictions map[string]uint64 `json:"restrictions"`
+	ID           string            `json:"id,omitempty"`
+	Licensed     map[string]string `json:"licensed,omitempty"`
+	IssuedAt     int64             `json:"issued_at,omitempty"`
+	ExpiredAt    int64             `json:"expired_at,omitempty"`
+	Features     []string          `json:"features,omitempty"`
+	Restrictions map[string]int64  `json:"restrictions,omitempty"`
 }
 
 func (lic *License) HasExpired() bool {
