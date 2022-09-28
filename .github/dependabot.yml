@@ -1,0 +1,11 @@
+version: 2
+updates:
+  - package-ecosystem: gomod
+    directory: "/"
+    commit-message:
+      prefix: "ci:"
+    labels:
+      - c:deps
+    schedule:
+      interval: weekly
+      day: sunday
