@@ -4,8 +4,6 @@ updates:
     directory: "/"
     commit-message:
       prefix: "ci:"
-    labels:
-      - c:deps
     schedule:
       interval: weekly
       day: sunday
