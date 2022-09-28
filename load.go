@@ -12,7 +12,7 @@ import (
 
 type Loader struct {
 	licKey []byte
-	pubKey ed25519.PublicKey
+	pubKey []ed25519.PublicKey
 }
 
 func Load(key []byte) *Loader {
@@ -21,8 +21,8 @@ func Load(key []byte) *Loader {
 	}
 }
 
-func (l *Loader) LoadPublicKey(key ed25519.PublicKey) {
-	l.pubKey = key
+func (l *Loader) LoadPublicKey(keys []ed25519.PublicKey) {
+	l.pubKey = keys
 }
 
 func (l *Loader) GetLicense() (*License, error) {
@@ -71,8 +71,8 @@ func (l *Loader) GetLicense() (*License, error) {
 		return nil, errors.New("wrong verify checksum")
 	}
 
-	if verified := ed25519.Verify(l.pubKey, decryptedData, signature); !verified {
-		return nil, errors.New("error verify signature")
+	if err := l.verify(decryptedData, signature); err != nil {
+		return nil, err
 	}
 
 	var license License
@@ -86,4 +86,14 @@ func (l *Loader) GetLicense() (*License, error) {
 	}
 
 	return &license, nil
+}
+
+func (l *Loader) verify(message, sig []byte) error {
+	for _, key := range l.pubKey {
+		if verified := ed25519.Verify(key, message, sig); verified {
+			return nil
+		}
+	}
+
+	return errors.New("error verify signature")
 }

@@ -56,7 +56,7 @@ func generate() []byte {
 
 func verify(key []byte) {
 	load := license.Load(key)
-	load.LoadPublicKey(publicKey)
+	load.LoadPublicKey([]ed25519.PublicKey{publicKey})
 
 	lic, err := load.GetLicense()
 	if err != nil {
