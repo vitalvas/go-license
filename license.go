@@ -12,7 +12,7 @@ type License struct {
 }
 
 func (lic *License) HasExpired() bool {
-	if lic.ExpiredAt > 0 && time.Now().UTC().Unix() >= int64(lic.ExpiredAt) {
+	if lic.ExpiredAt > 0 && time.Now().UTC().Unix() >= lic.ExpiredAt {
 		return true
 	}
 

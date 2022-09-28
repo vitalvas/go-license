@@ -3,7 +3,7 @@ package license
 import (
 	"bytes"
 	"crypto/ed25519"
-	"crypto/sha1"
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
@@ -36,7 +36,7 @@ func (l *Loader) GetLicense() (*License, error) {
 		return nil, err
 	}
 
-	var content LicenseContent
+	var content licenseContent
 	if err := json.Unmarshal(decompressed, &content); err != nil {
 		return nil, err
 	}
@@ -61,13 +61,13 @@ func (l *Loader) GetLicense() (*License, error) {
 		return nil, err
 	}
 
-	msgHash := sha1.New()
+	msgHash := sha256.New()
 	if _, err = msgHash.Write(decryptedData); err != nil {
 		return nil, err
 	}
 	msgHashCheckSum := msgHash.Sum(nil)
 
-	if bytes.Compare(msgHashCheckSum, msgHashSum) != 0 {
+	if !bytes.Equal(msgHashCheckSum, msgHashSum) {
 		return nil, errors.New("wrong verify checksum")
 	}
 

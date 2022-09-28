@@ -2,7 +2,7 @@ package license
 
 import (
 	"bytes"
-	"io/ioutil"
+	"io"
 
 	"github.com/klauspost/compress/flate"
 	"golang.org/x/crypto/chacha20poly1305"
@@ -32,7 +32,7 @@ func decompress(data []byte) ([]byte, error) {
 
 	defer zr.Close()
 
-	decompressed, err := ioutil.ReadAll(zr)
+	decompressed, err := io.ReadAll(zr)
 	if err != nil {
 		return nil, err
 	}

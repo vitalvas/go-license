@@ -2,7 +2,7 @@ package license
 
 import (
 	"crypto/ed25519"
-	"crypto/sha1"
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
@@ -15,7 +15,7 @@ type Generate struct {
 	key ed25519.PrivateKey
 }
 
-type LicenseContent struct {
+type licenseContent struct {
 	Data     string `json:"d"`
 	Sign     string `json:"s"`
 	DataHash string `json:"h"`
@@ -85,7 +85,7 @@ func (g *Generate) GetLicenseKey() ([]byte, error) {
 		return nil, err
 	}
 
-	msgHash := sha1.New()
+	msgHash := sha256.New()
 	if _, err = msgHash.Write(data); err != nil {
 		return nil, err
 	}
@@ -98,7 +98,7 @@ func (g *Generate) GetLicenseKey() ([]byte, error) {
 		return nil, err
 	}
 
-	content := LicenseContent{
+	content := licenseContent{
 		Data:     base64.RawURLEncoding.EncodeToString(encryptedData),
 		Sign:     base64.RawURLEncoding.EncodeToString(signature),
 		DataHash: base64.RawURLEncoding.EncodeToString(msgHashSum),
