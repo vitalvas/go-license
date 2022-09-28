@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/vitalvas/go-license"
 )
 
@@ -63,5 +64,5 @@ func verify(key []byte) {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("%#v\n", lic)
+	spew.Dump(lic)
 }

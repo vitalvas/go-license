@@ -3,6 +3,7 @@ module github.com/vitalvas/go-license
 go 1.17
 
 require (
+	github.com/davecgh/go-spew v1.1.1
 	github.com/klauspost/compress v1.15.11
 	golang.org/x/crypto v0.0.0-20220926161630-eccd6366d1be
 )
