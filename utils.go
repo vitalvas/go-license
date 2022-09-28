@@ -2,9 +2,9 @@ package license
 
 import (
 	"bytes"
-	"compress/flate"
 	"io/ioutil"
 
+	"github.com/klauspost/compress/flate"
 	"golang.org/x/crypto/chacha20poly1305"
 )
 
