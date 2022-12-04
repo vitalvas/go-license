@@ -65,7 +65,7 @@ func (g *Generate) GetLicenseKey() ([]byte, error) {
 		return nil, errors.New("the expire time must be greater than the issue time")
 	}
 
-	data, err := json.Marshal(g.lic)
+	data, err := g.lic.Marshal()
 	if err != nil {
 		return nil, err
 	}

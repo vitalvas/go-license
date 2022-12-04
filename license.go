@@ -19,3 +19,7 @@ func (lic *License) HasExpired() bool {
 
 	return false
 }
+
+func (lic *License) Marshal() ([]byte, error) {
+	return json.Marshal(lic)
+}
