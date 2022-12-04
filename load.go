@@ -21,7 +21,7 @@ func Load(key []byte) *Loader {
 	}
 }
 
-func (l *Loader) LoadPublicKey(keys []ed25519.PublicKey) {
+func (l *Loader) LoadPublicKey(keys ...ed25519.PublicKey) {
 	l.pubKey = keys
 }
 
