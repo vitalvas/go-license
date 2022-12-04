@@ -33,16 +33,19 @@ func (g *Generate) LoadPrivateKey(key ed25519.PrivateKey) {
 	g.key = key
 }
 
-func (g *Generate) Set(key, value string) {
-	if g.lic.Licensed == nil {
-		g.lic.Licensed = make(map[string]string)
-	}
-
-	g.lic.Licensed[key] = value
-}
-
 func (g *Generate) SetID(id string) {
 	g.lic.ID = id
+}
+
+func (g *Generate) SetData(data interface{}) error {
+	var err error
+
+	g.lic.Data, err = json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (g *Generate) SetIssued(ts time.Time) {
@@ -51,24 +54,6 @@ func (g *Generate) SetIssued(ts time.Time) {
 
 func (g *Generate) SetExpired(ts time.Time) {
 	g.lic.ExpiredAt = ts.UTC().Unix()
-}
-
-func (g *Generate) SetFeature(key string) {
-	for _, row := range g.lic.Features {
-		if row == key {
-			return
-		}
-	}
-
-	g.lic.Features = append(g.lic.Features, key)
-}
-
-func (g *Generate) SetRestriction(key string, value int64) {
-	if g.lic.Restrictions == nil {
-		g.lic.Restrictions = make(map[string]int64)
-	}
-
-	g.lic.Restrictions[key] = value
 }
 
 func (g *Generate) GetLicenseKey() ([]byte, error) {

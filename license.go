@@ -1,14 +1,15 @@
 package license
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type License struct {
-	ID           string            `json:"id,omitempty"`
-	Licensed     map[string]string `json:"licensed,omitempty"`
-	IssuedAt     int64             `json:"issued_at,omitempty"`
-	ExpiredAt    int64             `json:"expired_at,omitempty"`
-	Features     []string          `json:"features,omitempty"`
-	Restrictions map[string]int64  `json:"restrictions,omitempty"`
+	ID        string          `json:"id,omitempty"`
+	IssuedAt  int64           `json:"issued_at,omitempty"`
+	ExpiredAt int64           `json:"expired_at,omitempty"`
+	Data      json.RawMessage `json:"data,omitempty"`
 }
 
 func (lic *License) HasExpired() bool {
