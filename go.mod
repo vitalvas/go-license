@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/davecgh/go-spew v1.1.1
-	github.com/klauspost/compress v1.16.4
+	github.com/klauspost/compress v1.16.5
 	golang.org/x/crypto v0.8.0
 )
 
