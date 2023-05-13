@@ -57,34 +57,42 @@ func TestEncodeDecode(t *testing.T) {
 		t.Error(err)
 	}
 
+	//nolint:staticcheck
 	if decoded == nil {
 		t.Error("decoded data is empty")
 	}
 
+	//nolint:staticcheck
 	if got, want := decoded.ID, license.ID; got != want {
 		t.Errorf("Want license ID %v, got %v", want, got)
 	}
 
+	//nolint:staticcheck
 	if got, want := decoded.Customer, license.Customer; got != want {
 		t.Errorf("Want license Customer %v, got %v", want, got)
 	}
 
+	//nolint:staticcheck
 	if got, want := decoded.Subscription, license.Subscription; got != want {
 		t.Errorf("Want license Subscription %v, got %v", want, got)
 	}
 
+	//nolint:staticcheck
 	if got, want := decoded.Type, license.Type; got != want {
 		t.Errorf("Want license Type %v, got %v", want, got)
 	}
 
+	//nolint:staticcheck
 	if got, want := decoded.IssuedAt, license.IssuedAt; got != want {
 		t.Errorf("Want license IssuedAt %v, got %v", want, got)
 	}
 
+	//nolint:staticcheck
 	if got, want := decoded.ExpiredAt, license.ExpiredAt; got != want {
 		t.Errorf("Want license IssuedAt %v, got %v", want, got)
 	}
 
+	//nolint:staticcheck
 	if got, want := decoded.Data, license.Data; !bytes.Equal(got, want) {
 		t.Errorf("Want license IssuedAt %v, got %v", want, got)
 	}
