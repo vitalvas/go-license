@@ -77,7 +77,7 @@ func generate() []byte {
 }
 
 func verify(licenseKey []byte) {
-	lic, err := license.Decode(licenseKey, []ed25519.PublicKey{publicKey})
+	lic, err := license.Decode(licenseKey, publicKey)
 	if err != nil {
 		log.Fatal(err)
 	}

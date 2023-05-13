@@ -11,17 +11,17 @@ import (
 )
 
 // DecodeFile decodes the PEM encoded license file and verifies the content signature using the ed25519 public key.
-func DecodeFile(path string, publicKeys []ed25519.PublicKey) (*License, error) {
+func DecodeFile(path string, publicKeys ...ed25519.PublicKey) (*License, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	return Decode(data, publicKeys)
+	return Decode(data, publicKeys...)
 }
 
 // Decode decodes the PEM encoded license key and verifies the content signature using the ed25519 public key.
-func Decode(data []byte, publicKeys []ed25519.PublicKey) (*License, error) {
+func Decode(data []byte, publicKeys ...ed25519.PublicKey) (*License, error) {
 	block, _ := pem.Decode(data)
 	if block == nil || block.Type != "LICENSE KEY" {
 		return nil, ErrMalformedLicense
