@@ -4,8 +4,8 @@ go 1.19
 
 require (
 	github.com/davecgh/go-spew v1.1.1
-	github.com/klauspost/compress v1.15.12
-	golang.org/x/crypto v0.0.0-20220926161630-eccd6366d1be
+	github.com/klauspost/compress v1.16.5
+	golang.org/x/crypto v0.8.0
 )
 
-require golang.org/x/sys v0.0.0-20220927170352-d9d178bc13c6 // indirect
+require golang.org/x/sys v0.7.0 // indirect
