@@ -1,4 +1,4 @@
-package licenseutil
+package license
 
 import (
 	"bytes"
@@ -7,30 +7,24 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
-	"errors"
-
-	"github.com/vitalvas/go-license/license"
+	"os"
 )
 
-type Loader struct {
-	licKey []byte
-	pubKey []ed25519.PublicKey
-}
-
-func Load(key []byte) *Loader {
-	return &Loader{
-		licKey: key,
+// DecodeFile decodes the PEM encoded license file and verifies the content signature using the ed25519 public key.
+func DecodeFile(path string, publicKeys []ed25519.PublicKey) (*License, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
 	}
+
+	return Decode([]byte(data), publicKeys)
 }
 
-func (l *Loader) LoadPublicKey(keys ...ed25519.PublicKey) {
-	l.pubKey = keys
-}
-
-func (l *Loader) GetLicense() (*license.License, error) {
-	block, _ := pem.Decode(l.licKey)
+// Decode decodes the PEM encoded license key and verifies the content signature using the ed25519 public key.
+func Decode(data []byte, publicKeys []ed25519.PublicKey) (*License, error) {
+	block, _ := pem.Decode(data)
 	if block == nil || block.Type != "LICENSE KEY" {
-		return nil, errors.New("can not decode block key")
+		return nil, ErrMalformedLicense
 	}
 
 	decompressed, err := decompress(block.Bytes)
@@ -70,32 +64,32 @@ func (l *Loader) GetLicense() (*license.License, error) {
 	msgHashCheckSum := msgHash.Sum(nil)
 
 	if !bytes.Equal(msgHashCheckSum, msgHashSum) {
-		return nil, errors.New("wrong verify checksum")
+		return nil, ErrWrongVerifyChecksum
 	}
 
-	if err := l.verify(decryptedData, signature); err != nil {
-		return nil, err
+	if verified := verifySignature(decryptedData, signature, publicKeys); !verified {
+		return nil, ErrVerifySignature
 	}
 
-	var license license.License
+	var license License
 
 	if err := json.Unmarshal(decryptedData, &license); err != nil {
 		return nil, err
 	}
 
 	if license.ID != block.Headers["id"] {
-		return nil, errors.New("wrong verify id")
+		return nil, ErrWrongVerifyID
 	}
 
 	return &license, nil
 }
 
-func (l *Loader) verify(message, sig []byte) error {
-	for _, key := range l.pubKey {
+func verifySignature(message, sig []byte, publicKeys []ed25519.PublicKey) bool {
+	for _, key := range publicKeys {
 		if verified := ed25519.Verify(key, message, sig); verified {
-			return nil
+			return true
 		}
 	}
 
-	return errors.New("error verify signature")
+	return false
 }

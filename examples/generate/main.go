@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
+	"github.com/vitalvas/go-license/license"
 	"github.com/vitalvas/go-license/license/licenseutil"
 )
 
@@ -75,11 +76,8 @@ func generate() []byte {
 	return key
 }
 
-func verify(key []byte) {
-	load := licenseutil.Load(key)
-	load.LoadPublicKey(publicKey)
-
-	lic, err := load.GetLicense()
+func verify(licenseKey []byte) {
+	lic, err := license.Decode(licenseKey, []ed25519.PublicKey{publicKey})
 	if err != nil {
 		log.Fatal(err)
 	}

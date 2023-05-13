@@ -1,4 +1,4 @@
-package licenseutil
+package license
 
 import (
 	"bytes"
@@ -7,6 +7,12 @@ import (
 	"github.com/klauspost/compress/flate"
 	"golang.org/x/crypto/chacha20poly1305"
 )
+
+type licenseContent struct {
+	Data     string `json:"d"`
+	Sign     string `json:"s"`
+	DataHash string `json:"h"`
+}
 
 func compress(data []byte) ([]byte, error) {
 	var buf bytes.Buffer

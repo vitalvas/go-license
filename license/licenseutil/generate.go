@@ -2,11 +2,7 @@ package licenseutil
 
 import (
 	"crypto/ed25519"
-	"crypto/sha256"
-	"encoding/base64"
 	"encoding/json"
-	"encoding/pem"
-	"errors"
 	"time"
 
 	"github.com/vitalvas/go-license/license"
@@ -59,55 +55,5 @@ func (g *Generate) SetExpired(ts time.Time) {
 }
 
 func (g *Generate) GetLicenseKey() ([]byte, error) {
-	if len(g.lic.ID) == 0 {
-		return nil, errors.New("license id not defined")
-	}
-
-	if g.lic.ExpiredAt > 0 && g.lic.ExpiredAt <= g.lic.IssuedAt {
-		return nil, errors.New("the expire time must be greater than the issue time")
-	}
-
-	data, err := g.lic.Marshal()
-	if err != nil {
-		return nil, err
-	}
-
-	msgHash := sha256.New()
-	if _, err = msgHash.Write(data); err != nil {
-		return nil, err
-	}
-	msgHashSum := msgHash.Sum(nil)
-
-	signature := ed25519.Sign(g.key, data)
-
-	encryptedData, err := encryptData(data, signature, msgHashSum)
-	if err != nil {
-		return nil, err
-	}
-
-	content := licenseContent{
-		Data:     base64.RawURLEncoding.EncodeToString(encryptedData),
-		Sign:     base64.RawURLEncoding.EncodeToString(signature),
-		DataHash: base64.RawURLEncoding.EncodeToString(msgHashSum),
-	}
-
-	dataContent, err := json.Marshal(content)
-	if err != nil {
-		return nil, err
-	}
-
-	compressed, err := compress(dataContent)
-	if err != nil {
-		return nil, err
-	}
-
-	keyHeaders := map[string]string{
-		"id": g.lic.ID,
-	}
-
-	return pem.EncodeToMemory(&pem.Block{
-		Type:    "LICENSE KEY",
-		Headers: keyHeaders,
-		Bytes:   compressed,
-	}), nil
+	return g.lic.Encode(g.key)
 }
