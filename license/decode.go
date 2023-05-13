@@ -17,7 +17,7 @@ func DecodeFile(path string, publicKeys []ed25519.PublicKey) (*License, error) {
 		return nil, err
 	}
 
-	return Decode([]byte(data), publicKeys)
+	return Decode(data, publicKeys)
 }
 
 // Decode decodes the PEM encoded license key and verifies the content signature using the ed25519 public key.

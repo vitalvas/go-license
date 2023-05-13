@@ -13,12 +13,6 @@ type Generate struct {
 	key ed25519.PrivateKey
 }
 
-type licenseContent struct {
-	Data     string `json:"d"`
-	Sign     string `json:"s"`
-	DataHash string `json:"h"`
-}
-
 func NewGenerate() *Generate {
 	return &Generate{
 		lic: license.License{
