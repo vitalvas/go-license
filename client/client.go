@@ -1,5 +1,6 @@
 package client
 
 type Client struct {
-	DNSHosts []string
+	DNSHosts     []string
+	APIEndpoints []string
 }

@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/vitalvas/go-license"
+	"github.com/vitalvas/go-license/license/licenseutil"
 )
 
 var privateKey ed25519.PrivateKey
@@ -38,7 +38,7 @@ type licenseContent struct {
 }
 
 func generate() []byte {
-	lic := license.NewGenerate()
+	lic := licenseutil.NewGenerate()
 	lic.LoadPrivateKey(privateKey)
 
 	licData := licenseContent{}
@@ -76,7 +76,7 @@ func generate() []byte {
 }
 
 func verify(key []byte) {
-	load := license.Load(key)
+	load := licenseutil.Load(key)
 	load.LoadPublicKey(publicKey)
 
 	lic, err := load.GetLicense()

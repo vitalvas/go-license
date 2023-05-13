@@ -1,4 +1,4 @@
-package license
+package licenseutil
 
 import (
 	"bytes"
@@ -8,6 +8,8 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"errors"
+
+	"github.com/vitalvas/go-license/license"
 )
 
 type Loader struct {
@@ -25,7 +27,7 @@ func (l *Loader) LoadPublicKey(keys ...ed25519.PublicKey) {
 	l.pubKey = keys
 }
 
-func (l *Loader) GetLicense() (*License, error) {
+func (l *Loader) GetLicense() (*license.License, error) {
 	block, _ := pem.Decode(l.licKey)
 	if block == nil || block.Type != "LICENSE KEY" {
 		return nil, errors.New("can not decode block key")
@@ -75,7 +77,7 @@ func (l *Loader) GetLicense() (*License, error) {
 		return nil, err
 	}
 
-	var license License
+	var license license.License
 
 	if err := json.Unmarshal(decryptedData, &license); err != nil {
 		return nil, err

@@ -1,4 +1,4 @@
-package license
+package licenseutil
 
 import (
 	"crypto/ed25519"
@@ -8,10 +8,12 @@ import (
 	"encoding/pem"
 	"errors"
 	"time"
+
+	"github.com/vitalvas/go-license/license"
 )
 
 type Generate struct {
-	lic License
+	lic license.License
 	key ed25519.PrivateKey
 }
 
@@ -23,7 +25,7 @@ type licenseContent struct {
 
 func NewGenerate() *Generate {
 	return &Generate{
-		lic: License{
+		lic: license.License{
 			IssuedAt: time.Now().Truncate(time.Hour * 24).UTC().Unix(),
 		},
 	}
