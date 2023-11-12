@@ -26,4 +26,17 @@ jobs:
         uses: golangci/golangci-lint-action@v3
 
       - name: go tests
-        run: go test -race -v ./...
+        run: go test -v -cover ./...
+
+      - name: go tests - race
+        run: go test -race -v -cover ./...
+
+      - name: go tests - coverprofile
+        run: go test -coverprofile=coverage.txt -covermode=atomic ./...
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          file: ./coverage.txt
