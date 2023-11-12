@@ -17,6 +17,10 @@ func (lic *License) Encode(privateKey ed25519.PrivateKey) ([]byte, error) {
 		return nil, ErrTime
 	}
 
+	if privateKey == nil {
+		return nil, ErrPrivateKeyNotDefined
+	}
+
 	data, err := json.Marshal(lic)
 	if err != nil {
 		return nil, err

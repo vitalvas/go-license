@@ -8,6 +8,48 @@ import (
 	"time"
 )
 
+func TestEncodeError(t *testing.T) {
+	license := &License{}
+
+	_, err := license.Encode(nil)
+	if err == nil {
+		t.Error("Expect error when encoding with nil key")
+	}
+}
+
+func TestEncodeErrorID(t *testing.T) {
+	license := &License{}
+
+	_, err := license.Encode(nil)
+	if err != ErrLicenseIDNotDefined {
+		t.Errorf("Expect error %v, got %v", ErrLicenseIDNotDefined, err)
+	}
+}
+
+func TestEncodeErrorExpired(t *testing.T) {
+	license := &License{
+		ID:        "f3a2b3e9-107a-498a-9b5d-24812371ee87",
+		IssuedAt:  time.Now().Unix(),
+		ExpiredAt: time.Now().Add(time.Hour * -1).Unix(),
+	}
+
+	if _, err := license.Encode(nil); err != ErrTime {
+		t.Errorf("Expect error %v, got %v", ErrTime, err)
+	}
+}
+
+func TestEncodeErrorPrivateKey(t *testing.T) {
+	license := &License{
+		ID:        "f3a2b3e9-107a-498a-9b5d-24812371ee87",
+		IssuedAt:  time.Now().Unix(),
+		ExpiredAt: time.Now().Add(time.Hour).Unix(),
+	}
+
+	if _, err := license.Encode(nil); err != ErrPrivateKeyNotDefined {
+		t.Errorf("Expect error %v, got %v", ErrPrivateKeyNotDefined, err)
+	}
+}
+
 func TestEncodeDecode(t *testing.T) {
 	publicKey, privateKey, err := ed25519.GenerateKey(rand.Reader)
 	if err != nil {
