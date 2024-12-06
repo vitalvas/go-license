@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/vitalvas/go-license/license"
 )
 
@@ -28,8 +28,8 @@ func main() {
 
 type licenseContent struct {
 	Org      licenseContentOrg `json:"org"`
-	Features []string          `json:"features"`
-	Limits   map[string]int    `json:"limits"`
+	Features []string          `json:"features,omitempty"`
+	Limits   map[string]int    `json:"limits,omitempty"`
 }
 
 type licenseContentOrg struct {
@@ -83,16 +83,22 @@ func verify(licenseKey []byte, publicKey ed25519.PublicKey) {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("\n---\n\n")
+	fmt.Println(strings.Repeat("-", 32))
 
-	spew.Dump(lic)
+	licData := lic.Data
+	lic.Data = nil
 
-	var licData licenseContent
-	if err := json.Unmarshal(lic.Data, &licData); err != nil {
+	encoder := json.NewEncoder(os.Stdout)
+	encoder.SetIndent("", "  ")
+
+	encoder.Encode(lic)
+
+	fmt.Println(strings.Repeat("-", 32))
+
+	var data licenseContent
+	if err := json.Unmarshal(licData, &data); err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("\n---\n\n")
-
-	spew.Dump(licData)
+	encoder.Encode(data)
 }

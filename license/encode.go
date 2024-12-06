@@ -58,5 +58,4 @@ func (lic *License) Encode(privateKey ed25519.PrivateKey) ([]byte, error) {
 			"id": lic.ID,
 		},
 	}), nil
-
 }

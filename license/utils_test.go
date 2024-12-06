@@ -98,6 +98,7 @@ func TestDecompress(t *testing.T) {
 		})
 	}
 }
+
 func TestEncryptData(t *testing.T) {
 	tests := []struct {
 		name    string
