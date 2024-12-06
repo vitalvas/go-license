@@ -47,6 +47,14 @@ func decompress(data []byte) ([]byte, error) {
 }
 
 func encryptData(data, key, nonce []byte) ([]byte, error) {
+	if len(key) < chacha20poly1305.KeySize {
+		return nil, ErrInvalidKey
+	}
+
+	if len(nonce) < chacha20poly1305.NonceSize {
+		return nil, ErrInvalidNonce
+	}
+
 	encKey := key[:chacha20poly1305.KeySize]
 	nonceKey := nonce[:chacha20poly1305.NonceSize]
 
@@ -59,6 +67,14 @@ func encryptData(data, key, nonce []byte) ([]byte, error) {
 }
 
 func decryptData(data, key, nonce []byte) ([]byte, error) {
+	if len(key) < chacha20poly1305.KeySize {
+		return nil, ErrInvalidKey
+	}
+
+	if len(nonce) < chacha20poly1305.NonceSize {
+		return nil, ErrInvalidNonce
+	}
+
 	encKey := key[:chacha20poly1305.KeySize]
 	nonceKey := nonce[:chacha20poly1305.NonceSize]
 

@@ -112,11 +112,11 @@ func TestEncodeDecode(t *testing.T) {
 
 	//nolint:staticcheck
 	if got, want := decoded.ExpiredAt, license.ExpiredAt; got != want {
-		t.Errorf("Want license IssuedAt %v, got %v", want, got)
+		t.Errorf("Want license ExpiredAt %v, got %v", want, got)
 	}
 
 	//nolint:staticcheck
 	if got, want := decoded.Data, license.Data; !bytes.Equal(got, want) {
-		t.Errorf("Want license IssuedAt %v, got %v", want, got)
+		t.Errorf("Want license Data %v, got %v", want, got)
 	}
 }

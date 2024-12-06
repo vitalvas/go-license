@@ -11,4 +11,7 @@ var (
 	ErrLicenseIDNotDefined  = errors.New("license id not defined")
 	ErrTime                 = errors.New("the expire time must be greater than the issue time")
 	ErrPrivateKeyNotDefined = errors.New("private key not defined")
+
+	ErrInvalidKey   = errors.New("invalid key")
+	ErrInvalidNonce = errors.New("invalid nonce")
 )
