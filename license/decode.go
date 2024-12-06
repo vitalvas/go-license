@@ -67,7 +67,7 @@ func Decode(data []byte, publicKeys ...ed25519.PublicKey) (*License, error) {
 		return nil, ErrWrongVerifyChecksum
 	}
 
-	if publicKeys != nil {
+	if len(publicKeys) > 0 {
 		if verified := verifySignature(decryptedData, signature, publicKeys); !verified {
 			return nil, ErrVerifySignature
 		}
@@ -88,6 +88,10 @@ func Decode(data []byte, publicKeys ...ed25519.PublicKey) (*License, error) {
 
 func verifySignature(message, sig []byte, publicKeys []ed25519.PublicKey) bool {
 	for _, key := range publicKeys {
+		if key == nil {
+			continue
+		}
+
 		if verified := ed25519.Verify(key, message, sig); verified {
 			return true
 		}
