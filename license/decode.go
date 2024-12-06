@@ -67,7 +67,7 @@ func Decode(data []byte, publicKeys ...ed25519.PublicKey) (*License, error) {
 		return nil, ErrWrongVerifyChecksum
 	}
 
-	if len(publicKeys) > 0 {
+	if publicKeys != nil {
 		if verified := verifySignature(decryptedData, signature, publicKeys); !verified {
 			return nil, ErrVerifySignature
 		}
