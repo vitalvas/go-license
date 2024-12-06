@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/vitalvas/go-license/compare/v1.0.0...v1.1.0) (2024-12-06)
+
+
+### Features
+
+* add licensecat and refactor example ([a9e033b](https://github.com/vitalvas/go-license/commit/a9e033ba88fc825fa2cafb926502a25a4c92ca2e))
+
+
+### Bug Fixes
+
+* verify sign ([b08e449](https://github.com/vitalvas/go-license/commit/b08e449debfe302bf040fccd803f31e3bafd83cb))
+
 ## 1.0.0 (2024-12-06)
 
 
