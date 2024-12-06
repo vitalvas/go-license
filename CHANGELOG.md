@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/vitalvas/go-license/compare/v1.1.0...v1.1.1) (2024-12-06)
+
+
+### Bug Fixes
+
+* verify id only if exists ([ea21ae1](https://github.com/vitalvas/go-license/commit/ea21ae151fee1a9ce9ffe1bc826e7017d65df45b))
+
 ## [1.1.0](https://github.com/vitalvas/go-license/compare/v1.0.0...v1.1.0) (2024-12-06)
 
 
