@@ -79,7 +79,7 @@ func Decode(data []byte, publicKeys ...ed25519.PublicKey) (*License, error) {
 		return nil, err
 	}
 
-	if license.ID != block.Headers["id"] {
+	if headerID, ok := block.Headers["id"]; ok && license.ID != headerID {
 		return nil, ErrWrongVerifyID
 	}
 
