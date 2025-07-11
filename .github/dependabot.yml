@@ -8,6 +8,10 @@ updates:
       - vitalvas
     assignees:
       - vitalvas
+    groups:
+      dependencies:
+        patterns:
+          - '*'
   - package-ecosystem: gomod
     directory: /
     schedule:
