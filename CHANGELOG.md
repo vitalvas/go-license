@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/vitalvas/go-license/compare/v1.1.2...v1.2.0) (2026-04-03)
+
+
+### Features
+
+* update go and deps ([3ff0ef2](https://github.com/vitalvas/go-license/commit/3ff0ef2235caa30e3bce596784c1eb4f93cc22a3))
+
 ## [1.1.2](https://github.com/vitalvas/go-license/compare/v1.1.1...v1.1.2) (2025-07-11)
 
 
