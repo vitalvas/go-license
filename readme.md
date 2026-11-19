@@ -1,10 +1,5 @@
 # Go License
 
-[![codecov](https://codecov.io/github/vitalvas/go-license/graph/badge.svg?token=2NZ71AW15P)](https://codecov.io/github/vitalvas/go-license)
-[![Go Report Card](https://goreportcard.com/badge/go.vitalvas.com/go-license)](https://goreportcard.com/report/go.vitalvas.com/go-license)
-[![GoDoc](https://godoc.org/go.vitalvas.com/go-license?status.svg)](https://godoc.org/go.vitalvas.com/go-license)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-
 A robust and secure Go library for generating, encoding, and validating software licenses with cryptographic signatures.
 
 ## Features
