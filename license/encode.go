@@ -26,8 +26,8 @@ func (lic *License) Encode(privateKey ed25519.PrivateKey) ([]byte, error) {
 	}
 
 	// The ID is stored in a PEM header and verified on decode. PEM header
-	// values are trimmed and must not contain ':' or line breaks, so an ID
-	// that is not round-trip safe would fail its own verification.
+	// values are trimmed and a newline ends the header line, so an ID that is
+	// not round-trip safe would fail its own verification.
 	if !validLicenseID(lic.ID) {
 		return nil, ErrInvalidLicenseID
 	}

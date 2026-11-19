@@ -106,7 +106,40 @@ id: license-001
 -----END LICENSE KEY-----
 ```
 
-### 2. License Data Structure
+The PEM block carries an `id` header that mirrors the license `ID`. On decode it
+is compared against the `ID` inside the signed payload, so the two must match.
+Because PEM header values are trimmed on parse and a newline ends the header
+line, the `ID` must not have leading or trailing whitespace or contain a
+newline; otherwise `Encode` returns `ErrInvalidLicenseID`.
+
+### 2. Container Shape
+
+The PEM body is the DEFLATE-compressed, base64-encoded form of a JSON container
+that wraps the encrypted license payload together with the material needed to
+verify and decrypt it:
+
+```json
+{
+  "d": "<base64url: ChaCha20-Poly1305 ciphertext of the license JSON>",
+  "s": "<base64url: Ed25519 signature of the license JSON>",
+  "h": "<base64url: SHA-256 hash of the license JSON>"
+}
+```
+
+| Field | Name      | Description                                                        |
+| ----- | --------- | ------------------------------------------------------------------ |
+| `d`   | Data      | License JSON encrypted with ChaCha20-Poly1305 (AEAD)               |
+| `s`   | Sign      | Ed25519 signature over the plaintext license JSON                  |
+| `h`   | DataHash  | SHA-256 checksum of the plaintext license JSON                     |
+
+The encode pipeline is: marshal the `License` to JSON, compute its SHA-256 hash
+and Ed25519 signature, then encrypt the JSON with ChaCha20-Poly1305 using the
+signature as the key and the hash as the nonce. The three values are
+base64url-encoded into the container above, which is then JSON-marshaled,
+DEFLATE-compressed, and PEM-encoded. Decoding reverses these steps and verifies
+the checksum and (when a public key is supplied) the signature.
+
+### 3. License Data Structure
 
 ```go
 type License struct {
