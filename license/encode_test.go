@@ -4,6 +4,7 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -216,7 +217,7 @@ func TestLicense_Encode_EdgeCases(t *testing.T) {
 
 	t.Run("encode with very large data", func(t *testing.T) {
 		// Create valid JSON with large content
-		largeJSON := `{"data":"` + strings.Repeat("a", 1024*10) + `"}`
+		largeJSON := fmt.Sprintf(`{"data":"%s"}`, strings.Repeat("a", 1024*10))
 
 		license := &License{
 			ID:   "large-data-license",
@@ -261,7 +262,7 @@ func TestLicense_Encode_EdgeCases(t *testing.T) {
 
 	t.Run("encode with maximum field lengths", func(t *testing.T) {
 		longString := strings.Repeat("a", 1000)
-		validJSON := `{"key":"value","long_field":"` + strings.Repeat("x", 500) + `"}`
+		validJSON := fmt.Sprintf(`{"key":"value","long_field":"%s"}`, strings.Repeat("x", 500))
 		license := &License{
 			ID:           longString,
 			Customer:     longString,

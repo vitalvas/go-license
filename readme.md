@@ -1,8 +1,8 @@
 # Go License
 
 [![codecov](https://codecov.io/github/vitalvas/go-license/graph/badge.svg?token=2NZ71AW15P)](https://codecov.io/github/vitalvas/go-license)
-[![Go Report Card](https://goreportcard.com/badge/github.com/vitalvas/go-license)](https://goreportcard.com/report/github.com/vitalvas/go-license)
-[![GoDoc](https://godoc.org/github.com/vitalvas/go-license?status.svg)](https://godoc.org/github.com/vitalvas/go-license)
+[![Go Report Card](https://goreportcard.com/badge/go.vitalvas.com/go-license)](https://goreportcard.com/report/go.vitalvas.com/go-license)
+[![GoDoc](https://godoc.org/go.vitalvas.com/go-license?status.svg)](https://godoc.org/go.vitalvas.com/go-license)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 A robust and secure Go library for generating, encoding, and validating software licenses with cryptographic signatures.
@@ -20,7 +20,7 @@ A robust and secure Go library for generating, encoding, and validating software
 ## Installation
 
 ```bash
-go get github.com/vitalvas/go-license
+go get go.vitalvas.com/go-license
 ```
 
 ## Quick Start
@@ -38,7 +38,7 @@ import (
     "log"
     "time"
 
-    "github.com/vitalvas/go-license/license"
+    "go.vitalvas.com/go-license/license"
 )
 
 func main() {
@@ -237,4 +237,4 @@ For questions and support:
 
 - Open an issue on GitHub
 - Check the [examples](examples/) directory for usage examples
-- Review the [API documentation](https://godoc.org/github.com/vitalvas/go-license)
+- Review the [API documentation](https://godoc.org/go.vitalvas.com/go-license)

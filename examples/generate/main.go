@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vitalvas/go-license/license"
+	"go.vitalvas.com/go-license/license"
 )
 
 func main() {
