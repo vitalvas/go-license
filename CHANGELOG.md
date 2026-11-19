@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.3.0](https://github.com/vitalvas/go-license/compare/v1.2.0...v1.3.0) (2026-11-19)
+
+
+### Features
+
+* document license file container shape in readme ([6266d98](https://github.com/vitalvas/go-license/commit/6266d98446f4118ca7b55d878c1952b785ee4cfc))
+* migrate module path to go.vitalvas.com and update go to 1.27 ([efaefa9](https://github.com/vitalvas/go-license/commit/efaefa974a0cefc1e64797fd5c584563497e4aa9))
+* remove badges from readme ([a10bf95](https://github.com/vitalvas/go-license/commit/a10bf95870f74507f85e9c0b9753e347a0d5f99b))
+
+
+### Bug Fixes
+
+* banch ([cfbfd3d](https://github.com/vitalvas/go-license/commit/cfbfd3d5ff1ed08ba13c3fd78ad317e179e4510f))
+* reject pem-unsafe license ids and add fuzz/benchmarks ([a403137](https://github.com/vitalvas/go-license/commit/a4031376b0f91c519a105c888bcb4516448ad077))
+
 ## [1.2.0](https://github.com/vitalvas/go-license/compare/v1.1.2...v1.2.0) (2026-04-03)
 
 
