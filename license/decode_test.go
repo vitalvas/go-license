@@ -502,3 +502,45 @@ func TestDecode_ChecksumVerification(t *testing.T) {
 		assert.Error(t, err) // May fail at different points depending on what gets corrupted
 	})
 }
+
+func FuzzDecode(f *testing.F) {
+	publicKey, privateKey, err := ed25519.GenerateKey(rand.Reader)
+	require.NoError(f, err)
+
+	valid, err := (&License{ID: "seed", Data: json.RawMessage(`{"a":1}`)}).Encode(privateKey)
+	require.NoError(f, err)
+
+	f.Add(valid)
+	f.Add([]byte("not a license"))
+	f.Add([]byte{})
+
+	f.Fuzz(func(_ *testing.T, data []byte) {
+		// Decode must never panic on arbitrary input, with or without a key.
+		_, _ = Decode(data)
+		_, _ = Decode(data, publicKey)
+	})
+}
+
+func BenchmarkDecode(b *testing.B) {
+	publicKey, privateKey, err := ed25519.GenerateKey(rand.Reader)
+	require.NoError(b, err)
+
+	lic := &License{
+		ID:        "benchmark-license-id",
+		Customer:  "benchmark-customer",
+		IssuedAt:  time.Now().Unix(),
+		ExpiredAt: time.Now().Add(time.Hour).Unix(),
+		Data:      json.RawMessage(`{"seats":10}`),
+	}
+
+	encoded, err := lic.Encode(privateKey)
+	require.NoError(b, err)
+
+	b.ReportAllocs()
+
+	for b.Loop() {
+		if _, err := Decode(encoded, publicKey); err != nil {
+			b.Fatal(err)
+		}
+	}
+}

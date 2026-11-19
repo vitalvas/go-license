@@ -9,6 +9,7 @@ var (
 	ErrWrongVerifyID       = errors.New("wrong verify id")
 
 	ErrLicenseIDNotDefined  = errors.New("license id not defined")
+	ErrInvalidLicenseID     = errors.New("license id contains invalid characters")
 	ErrTime                 = errors.New("the expire time must be greater than the issue time")
 	ErrPrivateKeyNotDefined = errors.New("private key not defined")
 

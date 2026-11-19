@@ -545,3 +545,131 @@ func TestUtils_EdgeCases(t *testing.T) {
 		assert.Empty(t, decrypted)
 	})
 }
+
+func FuzzCompressDecompress(f *testing.F) {
+	f.Add([]byte{})
+	f.Add([]byte("hello"))
+	f.Add([]byte(`{"key":"value","number":123}`))
+	f.Add(bytes.Repeat([]byte("a"), 1024))
+
+	f.Fuzz(func(t *testing.T, data []byte) {
+		compressed, err := compress(data)
+		require.NoError(t, err)
+
+		decompressed, err := decompress(compressed)
+		require.NoError(t, err)
+
+		if len(data) == 0 {
+			assert.Empty(t, decompressed)
+			return
+		}
+
+		assert.Equal(t, data, decompressed)
+	})
+}
+
+func FuzzDecompress(f *testing.F) {
+	f.Add([]byte{})
+	f.Add([]byte{0x3, 0x0})
+	f.Add([]byte{0xff, 0xff, 0xff, 0xff})
+
+	f.Fuzz(func(_ *testing.T, data []byte) {
+		// decompress must never panic on arbitrary input.
+		_, _ = decompress(data)
+	})
+}
+
+func FuzzEncryptDecrypt(f *testing.F) {
+	f.Add([]byte("hello"))
+	f.Add([]byte{})
+	f.Add(bytes.Repeat([]byte("secret"), 100))
+
+	key := make([]byte, chacha20poly1305.KeySize)
+	nonce := make([]byte, chacha20poly1305.NonceSize)
+
+	f.Fuzz(func(t *testing.T, data []byte) {
+		encrypted, err := encryptData(data, key, nonce)
+		require.NoError(t, err)
+
+		decrypted, err := decryptData(encrypted, key, nonce)
+		require.NoError(t, err)
+
+		if len(data) == 0 {
+			assert.Empty(t, decrypted)
+			return
+		}
+
+		assert.Equal(t, data, decrypted)
+	})
+}
+
+func FuzzDecryptData(f *testing.F) {
+	key := make([]byte, chacha20poly1305.KeySize)
+	nonce := make([]byte, chacha20poly1305.NonceSize)
+
+	f.Add([]byte("corrupted"))
+	f.Add([]byte{})
+
+	f.Fuzz(func(_ *testing.T, data []byte) {
+		// decryptData must never panic on arbitrary ciphertext.
+		_, _ = decryptData(data, key, nonce)
+	})
+}
+
+func BenchmarkCompress(b *testing.B) {
+	data := []byte(`{"key":"value","number":123,"nested":{"a":1,"b":2}}`)
+
+	b.ReportAllocs()
+
+	for b.Loop() {
+		if _, err := compress(data); err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkDecompress(b *testing.B) {
+	data := []byte(`{"key":"value","number":123,"nested":{"a":1,"b":2}}`)
+
+	compressed, err := compress(data)
+	require.NoError(b, err)
+
+	b.ReportAllocs()
+
+	for b.Loop() {
+		if _, err := decompress(compressed); err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkEncryptData(b *testing.B) {
+	data := []byte("benchmark data for encryption throughput measurement")
+	key := make([]byte, chacha20poly1305.KeySize)
+	nonce := make([]byte, chacha20poly1305.NonceSize)
+
+	b.ReportAllocs()
+
+	for b.Loop() {
+		if _, err := encryptData(data, key, nonce); err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkDecryptData(b *testing.B) {
+	data := []byte("benchmark data for decryption throughput measurement")
+	key := make([]byte, chacha20poly1305.KeySize)
+	nonce := make([]byte, chacha20poly1305.NonceSize)
+
+	encrypted, err := encryptData(data, key, nonce)
+	require.NoError(b, err)
+
+	b.ReportAllocs()
+
+	for b.Loop() {
+		if _, err := decryptData(encrypted, key, nonce); err != nil {
+			b.Fatal(err)
+		}
+	}
+}

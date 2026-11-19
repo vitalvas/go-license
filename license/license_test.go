@@ -119,3 +119,55 @@ func TestLicense_GetFingerprint(t *testing.T) {
 		})
 	}
 }
+
+func FuzzLicense_GetFingerprint(f *testing.F) {
+	f.Add("id", "customer", "sub", "type", int64(0), int64(0))
+	f.Add("other", "", "", "", int64(1700000000), int64(1800000000))
+
+	f.Fuzz(func(t *testing.T, id, customer, sub, typ string, issuedAt, expiredAt int64) {
+		lic := &License{
+			ID:           id,
+			Customer:     customer,
+			Subscription: sub,
+			Type:         typ,
+			IssuedAt:     issuedAt,
+			ExpiredAt:    expiredAt,
+		}
+
+		hash1, err := lic.GetFingerprint()
+		require.NoError(t, err)
+		assert.NotEmpty(t, hash1)
+
+		// The fingerprint must be deterministic for the same input.
+		hash2, err := lic.GetFingerprint()
+		require.NoError(t, err)
+		assert.Equal(t, hash1, hash2)
+	})
+}
+
+func BenchmarkLicense_Expired(b *testing.B) {
+	lic := &License{ExpiredAt: time.Now().Add(time.Hour).Unix()}
+
+	b.ReportAllocs()
+
+	for b.Loop() {
+		_ = lic.Expired()
+	}
+}
+
+func BenchmarkLicense_GetFingerprint(b *testing.B) {
+	lic := &License{
+		ID:        "benchmark-license-id",
+		Customer:  "benchmark-customer",
+		IssuedAt:  time.Now().Unix(),
+		ExpiredAt: time.Now().Add(time.Hour).Unix(),
+	}
+
+	b.ReportAllocs()
+
+	for b.Loop() {
+		if _, err := lic.GetFingerprint(); err != nil {
+			b.Fatal(err)
+		}
+	}
+}

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"unicode/utf8"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -277,4 +278,129 @@ func TestLicense_Encode_EdgeCases(t *testing.T) {
 		require.NoError(t, err)
 		assert.NotEmpty(t, encoded)
 	})
+}
+
+func TestLicense_Encode_InvalidID(t *testing.T) {
+	_, privateKey, err := ed25519.GenerateKey(rand.Reader)
+	require.NoError(t, err)
+
+	publicKey := privateKey.Public().(ed25519.PublicKey)
+
+	invalidIDs := []struct {
+		name string
+		id   string
+	}{
+		{"leading space", " license"},
+		{"trailing space", "license "},
+		{"only whitespace", " "},
+		{"leading tab", "\tlicense"},
+		{"newline", "lic\nense"},
+	}
+
+	for _, tt := range invalidIDs {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := (&License{ID: tt.id}).Encode(privateKey)
+			require.ErrorIs(t, err, ErrInvalidLicenseID)
+		})
+	}
+
+	validIDs := []string{
+		"license",
+		"f3a2b3e9-107a-498a-9b5d-24812371ee87",
+		"license.with.dots",
+		"license-with-unicode-测试",
+		"org:team:license",
+		"lic\tense",
+	}
+
+	for _, id := range validIDs {
+		t.Run(fmt.Sprintf("valid %s", id), func(t *testing.T) {
+			encoded, err := (&License{ID: id}).Encode(privateKey)
+			require.NoError(t, err)
+
+			decoded, err := Decode(encoded, publicKey)
+			require.NoError(t, err)
+			assert.Equal(t, id, decoded.ID)
+		})
+	}
+}
+
+func FuzzLicense_Encode_Decode(f *testing.F) {
+	publicKey, privateKey, err := ed25519.GenerateKey(rand.Reader)
+	require.NoError(f, err)
+
+	f.Add("license-id", "customer", `{"test":1}`)
+	f.Add("id-only", "", "")
+	f.Add("unicode-id", "acme", `{"seats":10,"name":"test"}`)
+
+	f.Fuzz(func(t *testing.T, id, customer, data string) {
+		// encoding/json replaces invalid UTF-8 with U+FFFD, so round-trip
+		// equality only holds for valid UTF-8 string fields.
+		if !utf8.ValidString(id) || !utf8.ValidString(customer) {
+			t.Skip()
+		}
+
+		lic := &License{
+			ID:       id,
+			Customer: customer,
+		}
+
+		if len(data) > 0 && json.Valid([]byte(data)) {
+			lic.Data = json.RawMessage(data)
+		}
+
+		encoded, err := lic.Encode(privateKey)
+		switch {
+		case len(id) == 0:
+			require.ErrorIs(t, err, ErrLicenseIDNotDefined)
+			return
+		case id != strings.TrimSpace(id), strings.Contains(id, "\n"):
+			// IDs that are not PEM-header safe are rejected on encode.
+			require.ErrorIs(t, err, ErrInvalidLicenseID)
+			return
+		}
+		require.NoError(t, err)
+
+		decoded, err := Decode(encoded, publicKey)
+		require.NoError(t, err)
+		assert.Equal(t, lic.ID, decoded.ID)
+		assert.Equal(t, lic.Customer, decoded.Customer)
+
+		// Data passes through encoding/json, which normalizes JSON (for
+		// example HTML-escaping '&', '<', '>'), so compare it semantically
+		// rather than byte-for-byte.
+		if len(lic.Data) == 0 {
+			assert.Empty(t, decoded.Data)
+		} else {
+			assert.JSONEq(t, string(lic.Data), string(decoded.Data))
+		}
+
+		// A second round-trip must be byte-stable once normalized.
+		reEncoded, err := decoded.Encode(privateKey)
+		require.NoError(t, err)
+		reDecoded, err := Decode(reEncoded, publicKey)
+		require.NoError(t, err)
+		assert.Equal(t, decoded.Data, reDecoded.Data)
+	})
+}
+
+func BenchmarkLicense_Encode(b *testing.B) {
+	_, privateKey, err := ed25519.GenerateKey(rand.Reader)
+	require.NoError(b, err)
+
+	lic := &License{
+		ID:        "benchmark-license-id",
+		Customer:  "benchmark-customer",
+		IssuedAt:  time.Now().Unix(),
+		ExpiredAt: time.Now().Add(time.Hour).Unix(),
+		Data:      json.RawMessage(`{"seats":10}`),
+	}
+
+	b.ReportAllocs()
+
+	for b.Loop() {
+		if _, err := lic.Encode(privateKey); err != nil {
+			b.Fatal(err)
+		}
+	}
 }
